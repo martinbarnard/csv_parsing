@@ -1,0 +1,2 @@
+-e git+https://github.com/martinbarnard/csv_parsing.git@02469dc7e818badbe1489f079cb82a1862ecaacb#egg=bink
+click==6.7
