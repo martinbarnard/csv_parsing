@@ -7,14 +7,22 @@ Using Dataset from https://data.gov.uk/dataset/mobile-phone-masts
 
 import csv
 import sys
-from operator import itemgetter
+import argparse
 import datetime
+from operator import itemgetter
 
-# Our deps
-import click
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
 
-stars = lambda n : click.echo(click.style('*'*n, fg='green'))
-title = lambda n : click.echo(click.style('{}'.format(n), fg='yellow'))
+style = OKGREEN + '{}' + ENDC
+stars = lambda n : print(style.format('*'*n))
+title = lambda n : print(style.format(n))
 class Pole():
     '''
     This is our csv parser. It will parse the CSV.
@@ -48,7 +56,7 @@ class Pole():
                         self.mapped_data[k] = [v]
             return True
         except Exception as e:
-            click.echo(e)
+            title(e)
             sys.exit(1)
 
     def rent_ordered(self, num_items = 5, ascending = True, field='Current Rent'):
@@ -62,9 +70,9 @@ class Pole():
         stars(120)
         title('getting {} items ordered by "{}"'.format(num_items, field))
         stars(120)
-        click.echo('\t'.join(p for p in rk))
+        title('\t'.join(p for p in rk))
         for row in rv[:num_items]:
-            click.echo('\t'.join(str(row[p]) for p in rk))
+            print('\t'.join(str(row[p]) for p in rk))
             
 
     def get_lease_info(self, years=25, ascending=True):
@@ -82,10 +90,10 @@ class Pole():
         stars(120)
 
         rk = items[0].keys()
-        click.echo('\t'.join(p for p in rk))
+        print('\t'.join(p for p in rk))
 
         for row in items:
-            click.echo('\t'.join(str(row[p]) for p in rk))
+            print('\t'.join(str(row[p]) for p in rk))
 
         title('Total Rent Calculated: {}'.format(sum_items))
 
@@ -115,9 +123,9 @@ class Pole():
         stars(120)
 
         rk = nn[0].keys()
-        click.echo('\t'.join(p for p in rk))
+        title('\t'.join(p for p in rk))
         for row in nn:
-            click.echo('\t'.join(str(row[p]) for p in row))
+            print('\t'.join(str(row[p]) for p in row))
         stars(120)
 
 
@@ -135,28 +143,50 @@ class Pole():
         title('Tentant Mast Count')
         stars(120)
         for k,v in sorted(rv.items()):
-            click.echo('{}\t\t{}'.format(k,v))
+            print('{}\t\t{}'.format(k,v))
 
 
-@click.command()
-@click.option('--years', type=click.INT, help='Print the # years lease')
-@click.option('--rent', type=click.INT, help='Print the rent')
-@click.option('--reverse', type=click.BOOL, help='Used to reverse normal output order', default=False)
-@click.option('--num', type=click.INT, help='Number of items to print')
-@click.argument('file', type=click.File('r'))
-def run(file, years, rent, reverse, num):
+def run():
     '''
     Parse our csv file and display some info
-    Example: bink --years 25 --rent 12  bink/poles.csv
     '''
+    years = 25
+    rev = False
+    rent = True
+
+    # Opts and args
+    parser = argparse.ArgumentParser( description = 'csv processor')
+    parser.add_argument('-f', '--file', help='csv file to process')
+    parser.add_argument('-r', '--rent', action='store_true', default=True, help='csv file to process')
+    parser.add_argument('-y', '--years', action='store', help='csv file to process', default=25)
+    args = parser.parse_args()
+
+    years = int(args.years)
+    rent = args.rent
+    f = args.file
+    if not f:
+        print('No file to open!')
+        sys.exit()
+
+    # File opening thang
+    try:
+        file = open(f)
+    except Exception as e:
+        print('unable to open {}'.format(arg))
+        print(e)
+        sys.exit(2)
+
+    if not file:
+        print('unable to do stuff without a file')
+        sys.exit(0)
+
     p = Pole(file)
-    rev = reverse
 
     if rent:
         p.rent_ordered()
 
     if years:
-        click.echo('Getting {} years lease info'.format(years))
+        title('Getting {} years lease info'.format(years))
         p.get_lease_info(years, rev)
 
     p.get_tenant_mast_count()
