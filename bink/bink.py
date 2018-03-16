@@ -6,7 +6,6 @@ Using Dataset from https://data.gov.uk/dataset/mobile-phone-masts
 '''
 
 import csv
-from os import path
 import sys
 from operator import itemgetter
 import datetime
@@ -60,7 +59,6 @@ class Pole():
         stars(120)
         click.echo('\t'.join(p for p in rk))
         for row in rv[:num_items]:
-            nr = row
             click.echo('\t'.join(str(row[p]) for p in rk))
             
 
@@ -77,7 +75,6 @@ class Pole():
         click.echo('getting lease info')
         stars(120)
         rk = items[0].keys()
-        st = '\t'.join(p for p in rk)
         click.echo('\t'.join(p for p in rk))
 
         for row in items:
