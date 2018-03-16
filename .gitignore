@@ -1,0 +1,3 @@
+bink.egg-info/*
+bink/*.pyc
+bink/__pycache*
