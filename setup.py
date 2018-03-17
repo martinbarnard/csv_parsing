@@ -8,9 +8,6 @@ setup(name='bink',
     author_email='barnard.martin@gmail.com',
     license='Public Domain',
     packages=['bink'],
-    install_requires=[
-        'click',
-    ],
     entry_points='''
     [console_scripts]
     bink=bink.bink:run

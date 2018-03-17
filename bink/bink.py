@@ -63,8 +63,13 @@ class Pole():
         '''
         print out the n-items from the list - ordering by field
         '''
+        if not field in self.csv_data[0]:
+            print("Field doesn't exist: {}".format(field))
+            return
         rv = []
+        # Reverse our logic, becauase...
         rev = not ascending
+
         rv = sorted(self.csv_data, key=itemgetter(field), reverse=rev)
         rk = rv[0].keys()
         stars(120)
@@ -145,6 +150,31 @@ class Pole():
         for k,v in sorted(rv.items()):
             print('{}\t\t{}'.format(k,v))
 
+def parse_args(args):
+    # Opts and args
+    parser = argparse.ArgumentParser( description = 'csv processor')
+    parser.add_argument('-f', '--file', action='store', help='csv file to process')
+    parser.add_argument('-r', '--rent', action='store_true', default=True, help='Do the rent thing')
+    parser.add_argument('-y', '--years', action='store', help='How many years', default=25)
+    print("parsing...")
+    p = parser.parse_args(args)
+    print(p)
+    return p
+
+def get_file_handle(f):
+    '''
+    Return a file handle for the given file
+    '''
+    # File opening thang
+    try:
+        file = open(f)
+        return file
+    except Exception as e:
+        print('unable to open {}'.format(f))
+        print(e)
+        sys.exit(2)
+
+
 
 def run():
     '''
@@ -153,13 +183,7 @@ def run():
     years = 25
     rev = False
     rent = True
-
-    # Opts and args
-    parser = argparse.ArgumentParser( description = 'csv processor')
-    parser.add_argument('-f', '--file', help='csv file to process')
-    parser.add_argument('-r', '--rent', action='store_true', default=True, help='csv file to process')
-    parser.add_argument('-y', '--years', action='store', help='csv file to process', default=25)
-    args = parser.parse_args()
+    args = parse_args(sys.argv[1:])
 
     years = int(args.years)
     rent = args.rent
@@ -168,16 +192,10 @@ def run():
         print('No file to open!')
         sys.exit()
 
-    # File opening thang
-    try:
-        file = open(f)
-    except Exception as e:
-        print('unable to open {}'.format(arg))
-        print(e)
-        sys.exit(2)
+    file = get_file_handle(f)
 
     if not file:
-        print('unable to do stuff without a file')
+        print('unable to do stuff without a file: {}'.format(f))
         sys.exit(0)
 
     p = Pole(file)
@@ -198,4 +216,5 @@ def run():
 
 
 
-
+if __name__=='__main__':
+    run()
