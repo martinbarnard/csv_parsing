@@ -2,25 +2,28 @@
 
 import bink
 import pytest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch #, mock_open
 
 def test_args_happy_path():
     '''
     Pytest for the happy path args
     '''
     args = ['--file' , 'bink/poles.csv']
-    parser = bink.parse_args(args)
-    assert(parser.file == 'bink/poles.csv')
+    parser = bink.parse_args()
+    nargs = parser.parse_args(args)
+    assert(nargs.file == 'bink/poles.csv')
 
 def test_args_years():
     args = ['-y' , '25']
-    parser = bink.parse_args(args)
-    assert(int(parser.years) == 25)
+    parser = bink.parse_args()
+    nargs = parser.parse_args(args)
+    assert(int(nargs.years) == 25)
 
 def test_args_invalid(capsys):
     args = ['-a', 'what is this']
     with pytest.raises(SystemExit):
-        bink.parse_args(args)
+        parser = bink.parse_args()
+        parser.parse_args(args)
         out, err = capsys.readouterr()
         assert out == 2
 

@@ -11,18 +11,9 @@ import argparse
 import datetime
 from operator import itemgetter
 
-HEADER = '\033[95m'
-OKBLUE = '\033[94m'
-OKGREEN = '\033[92m'
-WARNING = '\033[93m'
-FAIL = '\033[91m'
-ENDC = '\033[0m'
-BOLD = '\033[1m'
-UNDERLINE = '\033[4m'
 
-style = OKGREEN + '{}' + ENDC
-stars = lambda n : print(style.format('*'*n))
-title = lambda n : print(style.format(n))
+stars = lambda n : print('*'*n)
+title = lambda n : print(n)
 class Pole():
     '''
     This is our csv parser. It will parse the CSV.
@@ -150,16 +141,13 @@ class Pole():
         for k,v in sorted(rv.items()):
             print('{}\t\t{}'.format(k,v))
 
-def parse_args(args):
+def parse_args():
     # Opts and args
     parser = argparse.ArgumentParser( description = 'csv processor')
     parser.add_argument('-f', '--file', action='store', help='csv file to process')
     parser.add_argument('-r', '--rent', action='store_true', default=True, help='Do the rent thing')
     parser.add_argument('-y', '--years', action='store', help='How many years', default=25)
-    print("parsing...")
-    p = parser.parse_args(args)
-    print(p)
-    return p
+    return parser
 
 def get_file_handle(f):
     '''
@@ -183,13 +171,14 @@ def run():
     years = 25
     rev = False
     rent = True
-    args = parse_args(sys.argv[1:])
-
+    parser = parse_args()
+    args = parser.parse_args()
     years = int(args.years)
     rent = args.rent
     f = args.file
     if not f:
         print('No file to open!')
+        parser.print_help()
         sys.exit()
 
     file = get_file_handle(f)
