@@ -14,10 +14,10 @@ def test_args_happy_path():
     assert(nargs.file == 'bink/poles.csv')
 
 def test_args_years():
-    args = ['-y' , '25']
+    args = ['-y']
     parser = bink.parse_args()
     nargs = parser.parse_args(args)
-    assert(int(nargs.years) == 25)
+    assert(nargs.years == True)
 
 def test_args_invalid(capsys):
     args = ['-a', 'what is this']

@@ -64,8 +64,6 @@ class Pole():
         rv = sorted(self.csv_data, key=itemgetter(field), reverse=rev)
         rk = rv[0].keys()
         stars(120)
-        title('getting {} items ordered by "{}"'.format(num_items, field))
-        stars(120)
         title('\t'.join(p for p in rk))
         for row in rv[:num_items]:
             print('\t'.join(str(row[p]) for p in rk))
@@ -81,8 +79,6 @@ class Pole():
         # Total our rent
         sum_items = sum([float(p['Current Rent']) for p in items])
 
-        stars(120)
-        title('Getting Lease Info')
         stars(120)
 
         rk = items[0].keys()
@@ -144,9 +140,12 @@ class Pole():
 def parse_args():
     # Opts and args
     parser = argparse.ArgumentParser( description = 'csv processor')
+    parser.add_argument('-y', '--years', action='store_true', default=False, help='Leases for 25 years')
+    parser.add_argument('-r', '--rent', action='store_true',  default=False, help='Do the rent thing')
+    parser.add_argument('-m', '--masts', action='store_true', default=False, help='Do the mast count')
+    parser.add_argument('-l', '--lease', action='store_true', default=False, help='Get the lease info')
     parser.add_argument('-f', '--file', action='store', help='csv file to process')
-    parser.add_argument('-r', '--rent', action='store_true', default=True, help='Do the rent thing')
-    parser.add_argument('-y', '--years', action='store', help='How many years', default=25)
+
     return parser
 
 def get_file_handle(f):
@@ -168,14 +167,18 @@ def run():
     '''
     Parse our csv file and display some info
     '''
-    years = 25
+    years = False
     rev = False
-    rent = True
+    rent = False
     parser = parse_args()
     args = parser.parse_args()
-    years = int(args.years)
+
+    years = args.years
     rent = args.rent
+    masts = args.masts
+    lease = args.lease
     f = args.file
+
     if not f:
         print('No file to open!')
         parser.print_help()
@@ -190,17 +193,26 @@ def run():
     p = Pole(file)
 
     if rent:
+        stars(120)
+        title('Getting Rent')
         p.rent_ordered()
 
     if years:
+        stars(120)
         title('Getting {} years lease info'.format(years))
-        p.get_lease_info(years, rev)
+        p.get_lease_info(25, rev)
 
-    p.get_tenant_mast_count()
-    start_date = datetime.datetime.strptime('01 Jun 1999', '%d %b %Y')
-    end_date = datetime.datetime.strptime('31 Aug 2007', '%d %b %Y')
+    if masts:
+        stars(120)
+        title('Getting Mast count')
+        p.get_tenant_mast_count()
 
-    p.get_lease_between(start_date, end_date)
+    if lease:
+        stars(120)
+        title('Getting lease between dates')
+        start_date = datetime.datetime.strptime('01 Jun 1999', '%d %b %Y')
+        end_date = datetime.datetime.strptime('31 Aug 2007', '%d %b %Y')
+        p.get_lease_between(start_date, end_date)
 
 
 
